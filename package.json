@@ -1,6 +1,6 @@
 {
   "name": "sharegood-readme",
-  "version": "0.8.2",
+  "version": "0.8.4",
   "description": "const fs = require('fs')",
   "main": "readme.js",
   "scripts": {
@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "bin": {
-    "upreadme": "./readme.js"
+    "updateReadme": "./readme.js"
   }
 }

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const fs = require('fs')
 
 //项目介绍
@@ -19,6 +20,26 @@ let projectIntroduction = () => {
                 let type = '\n- 产品类型:' + typeValue
 
                 let result = '## 项目介绍-项目全称 \n\n### 概要' + technology + development + access + type
+                resolve(result)
+            }
+        })
+
+    })
+}
+
+//模块
+let viewModule = () => {
+    return new Promise((resolve, reject) => {
+        fs.readFile('README.md', (err, data) => {
+            if (err) {
+                console.log(err)
+            } else {
+                let text = data.toString()
+                let instructionValue = text.split('### 模块')[1] && text.split('### 模块\n')[1].split('\n\n### 补充说明')[0] || ''
+                if (instructionValue == '') {
+                    instructionValue = `* 一级模块\n - 二级模块\n - 二级模块`
+                }
+                let result = '\n\n### 模块\n' + instructionValue
                 resolve(result)
             }
         })
@@ -180,7 +201,6 @@ let gettingStarted = () => {
                     console.log('未找到测试环境打包命令,请以npm run build:uat:项目名 或 npm run build:test:项目名 定义')
                 }
 
-                console.log('打包测试', fatValue)
                 let start = '\n# 启动服务 \n npm run dev:' + name
                 let create = '\n# 新建业务 \n npm run new'
                 let buildFat = '\n# 构建开发环境 \n ' + fatValue
@@ -328,7 +348,6 @@ let nginx = () => {
             } else {
                 let text = data.toString()
                 let nginxValue = text.split('**nginx**\n\n```')[1] && text.split('**nginx**\n\n```')[1].split('\n```')[0] || ''
-                console.log('nginx', nginxValue)
                 let result = '\n\n**nginx**\n\n```' + nginxValue + '\n```'
                 resolve(result)
             }
@@ -391,28 +410,30 @@ let prople = () => {
 }
 
 let p1 = projectIntroduction()
-let p2 = supplement()
-let p3 = environmentalDependence()
-let p4 = fat()
-let p5 = uat()
-let p6 = production()
-let p7 = gettingStarted()
-let p8 = commitCode()
-let p9 = directory()
-let p10 = deploy()
-let p11 = maintenance()
-let p12 = package()
-let p13 = nginx()
-let p14 = more()
-let p15 = prople()
-const task = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15]
+let p2 = viewModule()
+let p3 = supplement()
+let p4 = environmentalDependence()
+let p5 = fat()
+let p6 = uat()
+let p7 = production()
+let p8 = gettingStarted()
+let p9 = commitCode()
+let p10 = directory()
+let p11 = deploy()
+let p12 = maintenance()
+let p13 = package()
+let p14 = nginx()
+let p15 = more()
+let p16 = prople()
+const task = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15,p16]
 
 Promise.all(task).then((result) => {
-    fs.writeFileSync('README.md', result.join(' '), (error) => {
+    fs.writeFile('README.md', result.join(' '), (error) => {
         if (error) {
             console.log(error);
             return false;
         }
+        console.log('文档更新成功')
     })
 }).catch((error) => {
     console.log(error)
