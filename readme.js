@@ -18,8 +18,15 @@ let projectIntroduction = () => {
                 let development = '\n- 开发方式:' + developmentValue
                 let access = '\n- 访问方式:' + accessValue
                 let type = '\n- 产品类型:' + typeValue
-
-                let result = '## 项目介绍-项目全称 \n\n### 概要' + technology + development + access + type
+               
+                let nameValue = text.split('## 项目介绍-')[1] && text.split('## 项目介绍-')[1].split('\n')[0] || ''
+                let projectName = ''
+                if(nameValue){
+                    projectName = nameValue
+                }else{
+                    projectName = '项目全称'
+                }
+                let result = `## 项目介绍-${projectName} \n\n### 概要` + technology + development + access + type
                 resolve(result)
             }
         })
@@ -37,7 +44,7 @@ let viewModule = () => {
                 let text = data.toString()
                 let instructionValue = text.split('### 模块')[1] && text.split('### 模块\n')[1].split('\n\n### 补充说明')[0] || ''
                 if (instructionValue == '') {
-                    instructionValue = `* 一级模块\n - 二级模块\n - 二级模块`
+                    instructionValue = `* 一级模块(名称根据实际需求修改)\n - 二级模块(名称根据实际需求修改)\n - 二级模块(名称根据实际需求修改)`
                 }
                 let result = '\n\n### 模块\n' + instructionValue
                 resolve(result)
@@ -67,22 +74,35 @@ let supplement = () => {
 //环境依赖
 let environmentalDependence = () => {
     return new Promise((resolve, reject) => {
-        let result = ''
-        fs.readFile('package.json', (err, data) => {
+        fs.readFile('package.json', (err, jsonData) => {
             if (err) {
                 console.log(err)
             } else {
-                let text = data.toString()
+                let text = jsonData.toString()
                 let vue = text.split('"vue":')[1].split('\n')[0] || ''
                 let router = text.split('"vue-router"')[1].split('\n')[0] || ''
                 let ui = text.split('"element-ui":')[1].split('\n')[0] || ''
                 let vuex = text.split('"vuex":')[1].split('\n')[0] || ''
                 let sharegoodUi = text.split('"sharegood-cloud-utils":')[1].split('\n')[0] || ''
-                //环境依赖
-                result = `\n\n## 环境依赖 \n|  名称  |  版本  |  备注  | \n| --- |--- |--- |\n| vue | v${vue} |  |` + `\n| vue-router | v${router} |  |`
-                    + `\n| element-ui | v${ui} |  |` + `\n| vuex | v${vuex} |  |`
-                    + `\n| sharegood-ui | v${sharegoodUi} | 基于element-ui封装的组件库 [文档](http://sharegood-element-ui.fat1.icinfo.co/#/zh-CN/component/README) |`
-                resolve(result)
+
+                let result = ''
+                fs.readFile('README.md', (err, data) => {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        let readmeText = data.toString()
+                        let environmentalValue = readmeText.split('## 环境依赖 \n')[1] && readmeText.split('## 环境依赖 \n')[1].split('\n\n### 环境配置')[0] || ''
+                        
+                        if(environmentalValue){
+                            result = environmentalValue
+                        }else{
+                            result = `\n\n## 环境依赖 \n|  名称  |  版本  |  备注  | \n| --- |--- |--- | \n| vue | v${vue} |  |` + `\n| vue-router | v${router} |  |`
+                            + `\n| element-ui | v${ui} |  |` + `\n| vuex | v${vuex} |  |`
+                            + `\n| sharegood-ui | v${sharegoodUi} | 基于element-ui封装的组件库 [文档](http://sharegood-element-ui.fat1.icinfo.co/#/zh-CN/component/README) |`
+                        }
+                        resolve(result)
+                    }
+                })
             }
         })
 
@@ -240,10 +260,18 @@ let commitCode = () => {
 //工程目录
 let directory = () => {
     return new Promise((resolve, reject) => {
-        let title = '\n\n## 工程目录\n\n```'
 
-        let end = '\n```'
-        let content = `
+        fs.readFile('README.md', (err, data) => {
+            if (err) {
+                console.log(err)
+            } else {
+                let text = data.toString()
+                let meauValue = text.split('## 工程目录')[1] && text.split('## 工程目录\n\n```')[1].split('\n```')[0] || ''
+                let content = ''
+                if (meauValue) {
+                    content = meauValue
+                } else {
+                    content = `
         |-- .env.development ------------ dev 环境变量
         |-- .env.development.local ------ dev 本地环境变量 (被 git 忽略，需手动新建，用来重写部分环境变量)
         |-- .env.fat-项目名 ------------- 开发 环境变量
@@ -270,9 +298,15 @@ let directory = () => {
             |   |-- xxx.js
             |-- views ------------- 页面模块
         `
+                }
 
-        let result = title + content + end
-        resolve(result)
+                let title = '\n\n## 工程目录\n\n```'
+                let end = '\n```'
+                let result = title + content + end
+                resolve(result)
+            }
+        })
+
     })
 }
 
@@ -425,7 +459,7 @@ let p13 = package()
 let p14 = nginx()
 let p15 = more()
 let p16 = prople()
-const task = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15,p16]
+const task = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16]
 
 Promise.all(task).then((result) => {
     fs.writeFile('README.md', result.join(' '), (error) => {
