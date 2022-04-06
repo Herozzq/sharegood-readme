@@ -6,7 +6,7 @@ let projectIntroduction = () => {
     return new Promise((resolve, reject) => {
         fs.readFile('README.md', (err, data) => {
             if (err) {
-                console.log(err)
+                console.log('读取README失败，请检查文档')
             } else {
                 let text = data.toString()
                 let technologyValue = text.split('技术选型:')[1] && text.split('技术选型:')[1].split('\n')[0] || ''
@@ -39,7 +39,7 @@ let viewModule = () => {
     return new Promise((resolve, reject) => {
         fs.readFile('README.md', (err, data) => {
             if (err) {
-                console.log(err)
+                console.log('读取README失败，请检查文档')
             } else {
                 let text = data.toString()
                 let instructionValue = text.split('### 模块')[1] && text.split('### 模块\n')[1].split('\n\n### 补充说明')[0] || ''
@@ -59,7 +59,7 @@ let supplement = () => {
     return new Promise((resolve, reject) => {
         fs.readFile('README.md', (err, data) => {
             if (err) {
-                console.log(err)
+                console.log('读取README失败，请检查文档')
             } else {
                 let text = data.toString()
                 let instructionValue = text.split('### 补充说明')[1] && text.split('### 补充说明\n')[1].split('\n\n## 环境依赖')[0] || ''
@@ -74,38 +74,31 @@ let supplement = () => {
 //环境依赖
 let environmentalDependence = () => {
     return new Promise((resolve, reject) => {
-        fs.readFile('package.json', (err, jsonData) => {
-            if (err) {
-                console.log(err)
-            } else {
-                let text = jsonData.toString()
-                let vue = text.split('"vue":')[1].split('\n')[0] || ''
-                let router = text.split('"vue-router"')[1].split('\n')[0] || ''
-                let ui = text.split('"element-ui":')[1].split('\n')[0] || ''
-                let vuex = text.split('"vuex":')[1].split('\n')[0] || ''
-                let sharegoodUi = text.split('"sharegood-cloud-utils":')[1].split('\n')[0] || ''
-
-                let result = ''
-                fs.readFile('README.md', (err, data) => {
-                    if (err) {
-                        console.log(err)
-                    } else {
-                        let readmeText = data.toString()
-                        let environmentalValue = readmeText.split('## 环境依赖 \n')[1] && readmeText.split('## 环境依赖 \n')[1].split('\n\n### 环境配置')[0] || ''
-                        
-                        if(environmentalValue){
-                            result = environmentalValue
-                        }else{
-                            result = `\n\n## 环境依赖 \n|  名称  |  版本  |  备注  | \n| --- |--- |--- | \n| vue | v${vue} |  |` + `\n| vue-router | v${router} |  |`
-                            + `\n| element-ui | v${ui} |  |` + `\n| vuex | v${vuex} |  |`
-                            + `\n| sharegood-ui | v${sharegoodUi} | 基于element-ui封装的组件库 [文档](http://sharegood-element-ui.fat1.icinfo.co/#/zh-CN/component/README) |`
-                        }
-                        resolve(result)
-                    }
-                })
+        try {
+            let text = fs.readFileSync('package.json').toString()
+            let vue = text.split('"vue":')[1].split('\n')[0] || ''
+            let router = text.split('"vue-router"')[1].split('\n')[0] || ''
+            let ui = text.split('"element-ui":')[1].split('\n')[0] || ''
+            let vuex = text.split('"vuex":')[1].split('\n')[0] || ''
+            let sharegoodUi = text.split('"sharegood-cloud-utils":')[1].split('\n')[0] || ''
+    
+            let readmeText = fs.readFileSync('README.md').toString()
+            let result = ''
+            let environmentalValue = readmeText.split('## 环境依赖 \n')[1] && readmeText.split('## 环境依赖 \n')[1].split('\n\n### 环境配置')[0] || ''
+            
+            if(environmentalValue){
+                result = `\n\n## 环境依赖 \n` + environmentalValue
+            }else{
+                result = `\n\n## 环境依赖 \n|  名称  |  版本  |  备注  | \n| --- |--- |--- | \n| vue | v${vue} |  |` + `\n| vue-router | v${router} |  |`
+                + `\n| element-ui | v${ui} |  |` + `\n| vuex | v${vuex} |  |`
+                + `\n| sharegood-ui | v${sharegoodUi} | 基于element-ui封装的组件库 [文档](http://sharegood-element-ui.fat1.icinfo.co/#/zh-CN/component/README) |`
             }
-        })
-
+            console.log('依赖',result)
+            resolve(result)
+        } catch (error) {
+            console.log('环境依赖更新失败，请确保在sharegood项目里使用')
+        }
+       
     })
 }
 
@@ -161,7 +154,6 @@ let uat = () => {
     })
 }
 
-
 let production = () => {
     return new Promise((resolve, reject) => {
         let contents = fs.readdirSync('./')
@@ -194,7 +186,7 @@ let gettingStarted = () => {
 
         fs.readFile('package.json', (err, data) => {
             if (err) {
-                console.log(err)
+                console.log('读取package.json文件失败，请检查项目')
             } else {
                 let text = data.toString()
                 let fatValue = ''
@@ -238,7 +230,6 @@ let gettingStarted = () => {
 let commitCode = () => {
     return new Promise((resolve, reject) => {
         let title = '\n\n## 代码提交 \n### commit 格式\n\n格式 `type: subject`\n\n比如 feat: 新增登录模块\n\n```javascript\n;\n'
-
         let docs = "\40\40'docs', // Adds or alters documentation. 仅仅修改了文档，比如README, CHANGELOG, CONTRIBUTE等等\n"
         let chore = "\40\40'chore', // Other changes that don't modify src or test files. 改变构建流程、或者增加依赖库、工具等\n"
         let feat = "\40\40'feat', // Adds a new feature. 新增feature\n"
@@ -260,10 +251,9 @@ let commitCode = () => {
 //工程目录
 let directory = () => {
     return new Promise((resolve, reject) => {
-
         fs.readFile('README.md', (err, data) => {
             if (err) {
-                console.log(err)
+                console.log('读取README失败，请检查文档')
             } else {
                 let text = data.toString()
                 let meauValue = text.split('## 工程目录')[1] && text.split('## 工程目录\n\n```')[1].split('\n```')[0] || ''
@@ -317,7 +307,7 @@ let deploy = () => {
         let title = `\n\n## 发布部署 \n|   环境   | 分支  |  访问地址  |  构建命令  |  发布部署  | 备注  |\n| --- |--- |--- |--- |--- |--- |\n`
         fs.readFile('README.md', (err, data) => {
             if (err) {
-                console.log(err)
+                console.log('读取README失败，请检查文档')
             } else {
                 let text = data.toString()
                 let devValue = text.split('| 开发环境 |')[1] && text.split('| 开发环境 |')[1].split('\n')[0] || ''
@@ -341,7 +331,7 @@ let maintenance = () => {
     return new Promise((resolve, reject) => {
         fs.readFile('.env.production', (err, data) => {
             if (err) {
-                console.log(err)
+                console.log('读取env.production文件失败，请检查配置')
             } else {
                 let title = '\n\n### 运维 \n**配置文件.env.production**\n```\n'
                 let text = data.toString()
@@ -378,7 +368,7 @@ let nginx = () => {
     return new Promise((resolve, reject) => {
         fs.readFile('README.md', (err, data) => {
             if (err) {
-                console.log(err)
+                console.log('读取README失败，请检查文档')
             } else {
                 let text = data.toString()
                 let nginxValue = text.split('**nginx**\n\n```')[1] && text.split('**nginx**\n\n```')[1].split('\n```')[0] || ''
@@ -394,7 +384,7 @@ let more = () => {
     return new Promise((resolve, reject) => {
         fs.readFile('README.md', (err, data) => {
             if (err) {
-                console.log(err)
+                console.log('读取README失败，请检查文档')
             } else {
                 let text = data.toString()
                 let interfaceValue = text.split('[接口文档]')[1] && text.split('[接口文档](')[1].split(')\n')[0] || ''
@@ -418,7 +408,7 @@ let prople = () => {
     return new Promise((resolve, reject) => {
         fs.readFile('README.md', (err, data) => {
             if (err) {
-                console.log(err)
+                console.log('读取README失败，请检查文档')
             } else {
                 let text = data.toString()
                 let frontValue = text.split('前端：')[1] && text.split('前端：')[1].split('\n')[0] || ''
@@ -439,8 +429,6 @@ let prople = () => {
             }
         })
     })
-
-
 }
 
 let p1 = projectIntroduction()
@@ -470,5 +458,5 @@ Promise.all(task).then((result) => {
         console.log('文档更新成功')
     })
 }).catch((error) => {
-    console.log(error)
+    console.log('更新失败，请检查项目配置')
 })
