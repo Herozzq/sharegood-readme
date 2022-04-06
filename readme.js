@@ -93,7 +93,6 @@ let environmentalDependence = () => {
                 + `\n| element-ui | v${ui} |  |` + `\n| vuex | v${vuex} |  |`
                 + `\n| sharegood-ui | v${sharegoodUi} | 基于element-ui封装的组件库 [文档](http://sharegood-element-ui.fat1.icinfo.co/#/zh-CN/component/README) |`
             }
-            console.log('依赖',result)
             resolve(result)
         } catch (error) {
             console.log('环境依赖更新失败，请确保在sharegood项目里使用')
@@ -183,7 +182,6 @@ let production = () => {
 let gettingStarted = () => {
     return new Promise((resolve, reject) => {
         let title = '\n\n## 开发上手 \n### web\n```bash\n'
-
         fs.readFile('package.json', (err, data) => {
             if (err) {
                 console.log('读取package.json文件失败，请检查项目')
@@ -240,7 +238,6 @@ let commitCode = () => {
         let revert = "\40\40'revert', // Reverts a previous commit. 回滚到上一个版本\n"
         let style = "\40\40'style', // Improves formatting, white-space. 仅仅修改了空格、格式缩进、都好等等，不改变代码逻辑\n"
         let test = "\40\40'test', // Adds or modifies tests. 测试用例，包括单元测试、集成测试等\n"
-
         let result = title + "[\n" + docs + chore + feat + fix + merge + perf + refactor + revert + style + test + "\n]\n```"
 
         resolve(result)
